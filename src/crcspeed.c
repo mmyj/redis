@@ -252,7 +252,12 @@ uint16_t crcspeed16big(uint16_t big_table[8][256], uint16_t crc_in, void *buf,
 uint64_t crcspeed64native(uint64_t table[8][256], uint64_t crc, void *buf,
                           size_t len) {
     uint64_t n = 1;
-
+    /*
+     * n的字节结构是：00 00 00 01
+     * 对于大端（低位内存存高位字节），n的内存结构是：00 00 00 01
+     * 对于小端（低位内存存低位字节），n的内存结构是：01 00 00 00
+     * *(char *)&n 取高位字节，所以对于大端，是00，对于小端是01
+     */
     return *(char *)&n ? crcspeed64little(table, crc, buf, len)
                        : crcspeed64big(table, crc, buf, len);
 }
